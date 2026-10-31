@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Predicciones Champions League</title>
+<style>body{font:16px Arial,sans-serif;max-width:850px;margin:35px auto;padding:0 16px;color:#222}table{border-collapse:collapse;width:100%;margin-bottom:24px}th,td{border:1px solid #ccc;padding:9px;text-align:left}th{background:#eee}input,select,button{padding:8px;margin:4px}button{cursor:pointer}.ok{color:green}</style></head>
+<body><h1>Predicciones Champions League</h1><p>Partidos cargados desde una API simulada y guardados en PostgreSQL.</p>
+{% for message in get_flashed_messages() %}<p class="ok">{{ message }}</p>{% endfor %}
+<h2>Partidos</h2><table><tr><th>ID</th><th>Local</th><th>Visitante</th><th>Fecha</th></tr>
+{% for m in matches %}<tr><td>{{ m.id }}</td><td>{{ m.home }}</td><td>{{ m.away }}</td><td>{{ m.played_at }}</td></tr>{% endfor %}</table>
+<h2>Registrar predicción</h2><form method="post" action="/predicciones"><label>Partido <select name="match_id">{% for m in matches %}<option value="{{ m.id }}">{{ m.home }} vs {{ m.away }}</option>{% endfor %}</select></label><label>Goles local <input type="number" name="home_goals" min="0" max="20" required></label><label>Goles visitante <input type="number" name="away_goals" min="0" max="20" required></label><button>Guardar</button></form>
+<h2>Predicciones registradas</h2><table><tr><th>Partido</th><th>Marcador</th><th>Ganador o empate</th></tr>{% for p in predictions %}<tr><td>{{ p.home }} vs {{ p.away }}</td><td>{{ p.home_goals }} - {{ p.away_goals }}</td><td>{{ p.outcome }}</td></tr>{% else %}<tr><td colspan="3">Todavía no hay predicciones.</td></tr>{% endfor %}</table></body></html>

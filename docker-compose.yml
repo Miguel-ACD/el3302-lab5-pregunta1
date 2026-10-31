@@ -1,0 +1,36 @@
+services:
+  web:
+    build: .
+    image: ${IMAGE_NAME:-lab5-champions:local}
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-lab5}:${POSTGRES_PASSWORD:-lab5local}@db:5432/${POSTGRES_DB:-champions}
+      MATCHES_API_URL: http://source:8080/matches.json
+    depends_on:
+      db:
+        condition: service_healthy
+      source:
+        condition: service_healthy
+    restart: unless-stopped
+  source:
+    build: .
+    command: ["python", "-m", "http.server", "8080", "--directory", "/app/source"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/matches.json')"]
+      interval: 3s
+      retries: 20
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-lab5}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lab5local}
+      POSTGRES_DB: ${POSTGRES_DB:-champions}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lab5} -d ${POSTGRES_DB:-champions}"]
+      interval: 3s
+      retries: 20
+volumes:
+  postgres_data:
