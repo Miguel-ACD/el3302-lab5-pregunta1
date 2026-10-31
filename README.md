@@ -43,6 +43,17 @@ No se deben publicar `.env` ni contraseñas en el repositorio.
 
 En una máquina virtual de AWS, Azure o Google Cloud con Docker Compose instalado: clonar el repositorio, crear `.env` con una contraseña propia, abrir el puerto configurado en el firewall, definir `IMAGE_NAME` con la imagen publicada y ejecutar `docker compose up -d`. La carpeta conserva el archivo Compose y el volumen `postgres_data` mantiene los registros. Para un entorno público real se recomienda HTTPS y restringir el acceso a la aplicación.
 
+### Despliegue realizado en AWS
+
+- Región: `us-east-1`.
+- Instancia EC2: `i-01a4970b98af1ffa8`, tipo `t3.micro`, Amazon Linux 2023.
+- URL comprobada: `http://3.80.162.197:8000`.
+- Grupo de seguridad: `sg-08739f8f30331c1e0`; puerto 8000 abierto para la demostración y SSH limitado a la IP del equipo usado para desplegar.
+- Instalación automatizada: [deploy/aws-user-data.sh](deploy/aws-user-data.sh). Instala Docker, Compose y Buildx; clona este repositorio, genera una contraseña local para PostgreSQL y ejecuta `docker compose up --build -d`.
+- Imagen publicada: `ghcr.io/miguel-acd/el3302-lab5-champions:1.0`. La instancia construye el mismo código desde este repositorio para no depender del acceso privado al registro.
+
+La IP pública puede cambiar si se detiene y vuelve a iniciar la instancia. Para una demostración pública prolongada se debe configurar HTTPS y proteger la aplicación. La instancia y su almacenamiento pueden generar cargos mientras sigan activos.
+
 ## Evidencias recomendadas
 
 1. Dockerfile completo.
